@@ -1,1 +1,15 @@
+# API
+
 API/WebsiteApi/Secrets.cs
+API/.idea
+API/.vs
+
+API/WebsiteApi/bin/
+API/WebsiteApi/obj/
+API/WebsiteApi/packages/
+API/WebsiteApi/riderModule.iml
+API/WebsiteApi/_ReSharper.Caches/
+
+
+
+# 
