@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+
+.login-button {
+  @apply p-3 font-light rounded-md text-slate-200 bg-slate-800 hover:bg-slate-900 transition ease-in duration-150
+}
+
+
+/* Home page */
+.home--banner-title {
+  @apply text-[50px] font-light;
+}
+
+.home--banner-subtitle {
+  @apply text-[25px] font-light w-[80%];
+}
+
+.home--begin-button {
+  @apply px-5 py-3 rounded-md bg-green-700 hover:bg-green-800 transition ease-in duration-150;
+}
+
+/* Dashboard */
+.dashboard--title {
+  @apply text-[30px] font-light;
+}
+
+.dashboard--action {
+  @apply text-red-500;
+}
+
+/* Jobs */
+.jobs--title {
+  @apply text-[30px] font-light;
+}
+
+/* Filters */
+.filters--label {
+  @apply text-xl font-light text-gray-300;
+}
+
+.filters--text-input {
+  @apply p-3 rounded-md bg-gray-800 text-gray-300 outline-none;
+}
