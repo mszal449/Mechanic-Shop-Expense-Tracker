@@ -1,5 +1,3 @@
-# Github Account Preview App
+# Mechanic Shop Expense Tracker
 ## Overview
-This application is a website used to monitor latest GitHub activity, track consistency with a reward system and competing with friends.
-The project uses ASP.NET Core for backend API, Next.js for frontend application, Azure SQL database and GitHub OAuth and API for authentication and data acess.
-
+The Mechanic Shop Expense Tracker is a tool designed to help mechanic shops efficiently manage and track job-related expenses. It allows users to monitor jobs, including their status, responsible mechanics, and vehicle details, while providing an easy way to track costs associated with each task.
