@@ -34,10 +34,10 @@ builder.Services.AddAuthentication(options =>
     .AddOAuth("github", options =>
         {
             // Oauth authentication middleware is second
-            
+
             // When a user needs to sign in, they will be redirected to the authorize endpoint
             options.AuthorizationEndpoint = "https://github.com/login/oauth/authorize";
-            
+
             // scopes
             options.Scope.Add("user");
 
@@ -48,7 +48,7 @@ builder.Services.AddAuthentication(options =>
             // The OAuth middleware will send the ClientId, ClientSecret, and the
             // authorization code to the token endpoint, and get an access token in return
             options.ClientId = Secrets.ClientId;
-            options.ClientSecret = Secrets.ClientSecret; 
+            options.ClientSecret = Secrets.ClientSecret;
             options.TokenEndpoint = "https://github.com/login/oauth/access_token";
 
             // Below we call the userinfo endpoint to get information about the user
@@ -74,26 +74,26 @@ builder.Services.AddAuthentication(options =>
                 using var jsonDoc = JsonDocument.Parse(jsonResponse);
                 var user = jsonDoc.RootElement;
                 context.Identity?.AddClaim(new Claim("github", "user"));
-                
-                // authentication complete, now check database for this user
-                var userService = context.HttpContext.RequestServices.GetService<UserService>();
-                var userIdString = user.GetProperty("id").ToString();
-                User? existingUser = null;
-                if (int.TryParse(userIdString, out int userId))
-                {
-                    // If parsing is successful, check if the user exists
-                    existingUser = await userService?.GetUserByGitHubId(userId);
-                }
-                // check if the user exists
 
-                if (existingUser is null || context.AccessToken is null)
-                {
-                    return;
-                } 
-                
-                await userService.SetAccessToken(existingUser.UserId, context.AccessToken, 60 * 60 * 8);
-                
-                context.Identity?.AddClaim(new Claim("id", existingUser.UserId.ToString()));
+                // authentication complete, now check database for this user
+                //var userService = context.HttpContext.RequestServices.GetService<UserService>();
+                //var userIdString = user.GetProperty("id").ToString();
+                //User? existingUser = null;
+                //if (int.TryParse(userIdString, out int userId))
+                //{
+                //    // If parsing is successful, check if the user exists
+                //    existingUser = await userService?.GetUserByGitHubId(userId);
+                //}
+                //// check if the user exists
+
+                //if (existingUser is null || context.AccessToken is null)
+                //{
+                //    return;
+                //} 
+
+                //await userService.SetAccessToken(existingUser.UserId, context.AccessToken, 60 * 60 * 8);
+
+                //context.Identity?.AddClaim(new Claim("id", existingUser.UserId.ToString()));
                 context.RunClaimActions(user);
             };
         }
@@ -109,20 +109,24 @@ builder.Services.AddAuthorization(b =>
     });
 });
 
+
 builder.Services.AddControllers();
-builder.Services.AddScoped<UserService>();
+//builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<JobService>();
 builder.Services.AddHttpClient();
-    
+
 // Database connection string
-var connection = builder.Environment.IsDevelopment() 
-    ? builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING") 
+var connection = builder.Environment.IsDevelopment()
+    ? builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING")
     : Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING");
 
 
 // Register DbContext
 builder.Services.AddDbContext<DataContext>(optionsBuilder =>
 {
-    optionsBuilder.UseSqlServer(connection, options => options.EnableRetryOnFailure());
+    optionsBuilder.UseSqlServer(
+        "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=MechanicShopExpenseTracker;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False",
+        options => options.EnableRetryOnFailure());
 });
 
 
@@ -142,6 +146,7 @@ if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
+
 }
 
 var app = builder.Build();
@@ -153,11 +158,10 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 
-
 // Simple API routes
 app.MapGet("/", (HttpContext context) =>
 {
-    if (context.User.Identity?.IsAuthenticated ?? false) // Check for authenticated user
+    if (context.User.Identity?.IsAuthenticated ?? false)
     {
         // Return the user's claims as JSON
         return Results.Json(context.User.Claims.Select(c => new { c.Type, c.Value }));
@@ -167,42 +171,12 @@ app.MapGet("/", (HttpContext context) =>
     return Results.Text("not logged in");
 });
 
-app.MapGet("/gh", (HttpContext context) =>
+
+if (app.Environment.IsDevelopment())
 {
-    var response = new
-    {
-        message = "private route",
-        user = new
-        {
-            id = context.User.FindFirstValue("id"),
-            githubUserName = context.User.FindFirstValue(ClaimTypes.Name)
-        }
-    };
-
-    return Results.Json(response);
-}).RequireAuthorization("github-enabled");
-
-
-app.MapGet("/github/info", async (HttpContext ctx) =>
-{
-    var user = ctx.User;
-    var dbId = user.FindFirstValue("id");
-    var userIdNumber = int.Parse(dbId); 
-    var userService = ctx.RequestServices.GetService<UserService>();
-    string? accessToken = await userService.GetAcccessTokenAsync(userIdNumber);
-    
-    var client = new HttpClient();
-    using var req = new HttpRequestMessage(HttpMethod.Get, "https://api.github.com/user");
-    req.Headers.Add("Authorization", $"Bearer {accessToken}");
-    req.Headers.Add("User-Agent", "ProfileSummaryApi");
-    var res = await client.SendAsync(req);
-    res.EnsureSuccessStatusCode();
-    
-    var content = await res.Content.ReadAsStringAsync();
-    var jsonresponse = JsonNode.Parse(content);
-    return Results.Json(jsonresponse);
-
-}).RequireAuthorization("github-enabled");
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.MapControllers();
 app.Run();

@@ -1,15 +1,37 @@
-import React from 'react';
+'use client'
+import { apiUrl } from '@/const';
+import { getAllJobs } from '@/services/jobService';
+import { Job, Status } from '@/types/apiTypes';
+import React, { useEffect, useState } from 'react';
+
+
 
 const JobsTable = () => {
-  const jobs = [
-    { id: 1, name: 'Oil Change', status: 'In Progress', mechanic: 'John Doe', createdAt: '2024-10-23' },
-    { id: 2, name: 'Brake Repair', status: 'Completed', mechanic: 'Jane Smith', createdAt: '2024-10-21' },
-    { id: 3, name: 'Engine Check', status: 'Pending', mechanic: 'Alex Johnson', createdAt: '2024-10-20' },
-  ];
+  const [jobs, setJobs] = useState<Job[] | null>(null);
+  const [isLoading, setIsLoading ] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        setIsLoading(true);
+        const jobsData = await getAllJobs();
+        setJobs(jobsData);
+      } catch (error: any) {
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchJobs();
+  }, []);
+  
 
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full border-collapse border border-gray-300">
+
+        {/* Table Head */}
         <thead>
           <tr>
             <th className="border border-gray-300 px-4 py-2">#</th>
@@ -20,13 +42,36 @@ const JobsTable = () => {
           </tr>
         </thead>
         <tbody>
-          {jobs.map((job) => (
-            <tr key={job.id}>
-              <td className="border border-gray-300 px-4 py-2">{job.id}</td>
+
+          {/* Loading spinner */}
+          {isLoading && (
+            <tr>
+              <td colSpan={5} className="border border-gray-300 px-4 py-2 text-center">
+                <div className="flex justify-center items-center space-x-2">
+                  <span className="loader"></span>
+                  <span>Loading...</span>
+                </div>
+              </td>
+            </tr>
+          )}
+
+          {/* Error notification */}
+          {!isLoading && error && (
+            <tr>
+              <td colSpan={5} className="border border-gray-300 px-4 py-2 text-center text-red-500">
+                Error: {error}
+              </td>
+            </tr>
+          )}
+
+          {/* Result table content */}
+          {!isLoading && jobs && jobs.map((job) => (
+            <tr key={job.jobId}>
+              <td className="border border-gray-300 px-4 py-2">{job.jobId}</td>
               <td className="border border-gray-300 px-4 py-2">{job.name}</td>
-              <td className="border border-gray-300 px-4 py-2">{job.status}</td>
-              <td className="border border-gray-300 px-4 py-2">{job.mechanic}</td>
-              <td className="border border-gray-300 px-4 py-2">{job.createdAt}</td>
+              <td className="border border-gray-300 px-4 py-2">{job.jobStatus}</td>
+              <td className="border border-gray-300 px-4 py-2">{job.supervisor || '-'}</td>
+              <td className="border border-gray-300 px-4 py-2">{job.createdAt.toLocaleDateString()}</td>
             </tr>
           ))}
         </tbody>

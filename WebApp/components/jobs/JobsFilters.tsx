@@ -2,7 +2,7 @@ import React from 'react';
 
 const JobsFilters = () => {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 w-full">
       <div>
         <label htmlFor="name" className="block filters--label">
           Job Name

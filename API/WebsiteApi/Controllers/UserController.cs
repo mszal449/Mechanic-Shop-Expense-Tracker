@@ -25,18 +25,16 @@ public class UserController(UserService service) : Controller
 
     public record UserResponse(
         int Id,
-        string UserName,
-        string Email,
-        decimal CurrentBalance
+        string Name,
+        string Email
     )
     {
         public static UserResponse FromModel(User user)
         {
             return new UserResponse(
                 user.UserId,
-                user.DisplayName,
-                user.Email,
-                user.CurrencyBalance
+                user.Name,
+                user.Email
             );
         }
     }
