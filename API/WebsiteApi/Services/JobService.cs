@@ -19,5 +19,12 @@ namespace WebsiteApi.Services
 
             return await query.ToListAsync();
         }
+
+        public async Task<Job> AddJob(Job job)
+        {
+            var result = await _context.Jobs.AddAsync(job);
+            await _context.SaveChangesAsync();
+            return result.Entity;
+        }
     }
 }
