@@ -1,4 +1,5 @@
 'use client'
+import { JOB_STATUS } from '@/const';
 import { getAllJobs } from '@/services/jobService';
 import { Job } from '@/types/apiTypes';
 import React, { useEffect, useState } from 'react';
@@ -116,7 +117,13 @@ const JobsTable = () => {
               </td>
               <td className="border border-gray-500 px-4 py-2">{job.jobId}</td>
               <td className="border border-gray-500 px-4 py-2">{job.name}</td>
-              <td className="border border-gray-500 px-4 py-2">{job.jobStatus}</td>
+              <td 
+                className={`border border-gray-500 px-4 py-2 
+                ${job.jobStatus === 0 ? 'text-orange-500' : 
+                job.jobStatus === 1 ? 'text-blue-500' : 
+                job. jobStatus === 2 ? 'text-green-500' : 
+                job.jobStatus === 3 ? 'text-red-500' : ''}`}>
+              {JOB_STATUS[String(job.jobStatus)].text}</td>
               <td className="border border-gray-500 px-4 py-2">{job.supervisor || '-'}</td>
               <td className="border border-gray-500 px-4 py-2">{job.createdAt.toLocaleDateString()}</td>
             </tr>
@@ -127,6 +134,24 @@ const JobsTable = () => {
       {selectedJobs.size > 0 && 
         <button className='px-3 py-2 m-2 bg-red-500 rounded-md' onClick={logSelectedJobs}>Log</button>
       }
+      {/* Pagination buttons */}
+      <div className="flex justify-center mt-4">
+        <button
+          className="px-3 py-2 mx-1 bg-gray-700 rounded-md"
+          onClick={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
+          disabled={pageNumber === 1}
+        >
+          Previous
+        </button>
+        <span className="px-3 py-2 mx-1">{pageNumber}</span>
+        <button
+          className="px-3 py-2 mx-1 bg-gray-700 rounded-md"
+          onClick={() => setPageNumber((prev) => prev + 1)}
+          disabled={jobs && jobs.length < pageSize}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };
