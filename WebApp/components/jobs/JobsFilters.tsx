@@ -2,9 +2,9 @@ import React from 'react';
 
 const JobsFilters = () => {
   return (
-    <div className="flex flex-col gap-4 w-full">
-      <div>
-        <label htmlFor="name" className="block filters--label">
+    <div className="flex flex-col gap-4 w-full p-4">
+      <div className='flex flex-col'>
+        <label htmlFor="name" className="filters--label">
           Job Name
         </label>
         <input
@@ -15,7 +15,7 @@ const JobsFilters = () => {
         />
       </div>
 
-      <div>
+      <div className='flex flex-col'>
         <label htmlFor="status" className="block filters--label">
           Status
         </label>
@@ -27,7 +27,7 @@ const JobsFilters = () => {
         />
       </div>
 
-      <div>
+      <div className='flex flex-col'>
         <label htmlFor="foreman" className="block filters--label">
           Foreman
         </label>
@@ -39,7 +39,7 @@ const JobsFilters = () => {
         />
       </div>
 
-      <div>
+      <div className='flex flex-col'>
         <label htmlFor="vehicleModel" className="block filters--label">
           Vehicle Model
         </label>
@@ -51,7 +51,7 @@ const JobsFilters = () => {
         />
       </div>
 
-      <div>
+      <div className='flex flex-col'>
         <label htmlFor="createdAt" className="block filters--label">
           Date Created
         </label>

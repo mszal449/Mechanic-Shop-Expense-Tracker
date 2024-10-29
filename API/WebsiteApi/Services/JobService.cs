@@ -8,9 +8,16 @@ namespace WebsiteApi.Services
     {
         private readonly DataContext _context = dataContext;
 
-        public async Task<List<Job>> GetAllJobs()
+        public async Task<List<Job>> GetAllJobs(int pageNumber = 1, int pageSize = 10)
         {
-            return await _context.Jobs.ToListAsync();
+            var query = _context.Jobs.AsQueryable();
+
+            if (pageNumber > 0 && pageSize > 0)
+            {
+                query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+            }
+
+            return await query.ToListAsync();
         }
     }
 }

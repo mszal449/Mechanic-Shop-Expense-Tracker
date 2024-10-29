@@ -10,11 +10,10 @@ namespace WebsiteApi.Controllers
     {
         private readonly JobService _jobService = jobService;
 
-
         [HttpGet]
-        public async Task<IActionResult> GetAllJobs()
+        public async Task<IActionResult> GetAllJobs([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var data = await _jobService.GetAllJobs();
+            var data = await _jobService.GetAllJobs(pageNumber, pageSize);
             return Ok(data);
         }
     }
