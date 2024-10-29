@@ -64,21 +64,21 @@ const JobsTable = () => {
 
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full border-collapse border border-gray-300">
+      <table className="min-w-full border-collapse border border-gray-500">
 
         {/* Table Head */}
         <thead>
           <tr>
-            <th className="border border-gray-300 px-4 py-2">
+            <th className="border border-gray-500 px-4 py-2">
               <input type='checkbox'
                 onChange={handleSelectAll}
               ></input>
             </th>
-            <th className="border border-gray-300 px-4 py-2">#</th>
-            <th className="border border-gray-300 px-4 py-2">Name</th>
-            <th className="border border-gray-300 px-4 py-2">Status</th>
-            <th className="border border-gray-300 px-4 py-2">Mechanic</th>
-            <th className="border border-gray-300 px-4 py-2">Created At</th>
+            <th className="border border-gray-500 px-4 py-2">#</th>
+            <th className="border border-gray-500 px-4 py-2">Name</th>
+            <th className="border border-gray-500 px-4 py-2">Status</th>
+            <th className="border border-gray-500 px-4 py-2">Mechanic</th>
+            <th className="border border-gray-500 px-4 py-2">Created At</th>
           </tr>
         </thead>
         <tbody>
@@ -86,7 +86,7 @@ const JobsTable = () => {
           {/* Loading spinner */}
           {isLoading && (
             <tr>
-              <td colSpan={5} className="border border-gray-300 px-4 py-2 text-center">
+              <td colSpan={5} className="border border-gray-500 px-4 py-2 text-center">
                 <div className="flex justify-center items-center space-x-2">
                   <span className="loader"></span>
                   <span>Loading...</span>
@@ -98,7 +98,7 @@ const JobsTable = () => {
           {/* Error notification */}
           {!isLoading && error && (
             <tr>
-              <td colSpan={5} className="border border-gray-300 px-4 py-2 text-center text-red-500">
+              <td colSpan={5} className="border border-gray-500 px-4 py-2 text-center text-red-500">
                 {error.toString()}
               </td>
             </tr>
@@ -107,23 +107,26 @@ const JobsTable = () => {
           {/* Result table content */}
           {!isLoading && jobs && jobs.map((job) => (
             <tr key={job.jobId}>
-              <td className="border border-gray-300 text-center">
+              <td className="border border-gray-500 text-center">
                 <input
                     type="checkbox"
                     checked={selectedJobs.has(job.jobId)}
                     onChange={() => handleCheckboxChange(job.jobId)}
                 />
               </td>
-              <td className="border border-gray-300 px-4 py-2">{job.jobId}</td>
-              <td className="border border-gray-300 px-4 py-2">{job.name}</td>
-              <td className="border border-gray-300 px-4 py-2">{job.jobStatus}</td>
-              <td className="border border-gray-300 px-4 py-2">{job.supervisor || '-'}</td>
-              <td className="border border-gray-300 px-4 py-2">{job.createdAt.toLocaleDateString()}</td>
+              <td className="border border-gray-500 px-4 py-2">{job.jobId}</td>
+              <td className="border border-gray-500 px-4 py-2">{job.name}</td>
+              <td className="border border-gray-500 px-4 py-2">{job.jobStatus}</td>
+              <td className="border border-gray-500 px-4 py-2">{job.supervisor || '-'}</td>
+              <td className="border border-gray-500 px-4 py-2">{job.createdAt.toLocaleDateString()}</td>
             </tr>
           ))}
         </tbody>
       </table>
-      <button className='px-3 py-2 m-2 bg-red-500 rounded-md' onClick={logSelectedJobs}>Log</button>
+      {/* operations on selected jobs */}
+      {selectedJobs.size > 0 && 
+        <button className='px-3 py-2 m-2 bg-red-500 rounded-md' onClick={logSelectedJobs}>Log</button>
+      }
     </div>
   );
 };
