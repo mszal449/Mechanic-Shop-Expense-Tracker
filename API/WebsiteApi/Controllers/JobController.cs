@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using Microsoft.AspNetCore.Mvc;
 using WebsiteApi.Models;
 using WebsiteApi.Services;
 
@@ -14,11 +11,42 @@ namespace WebsiteApi.Controllers
         private readonly JobService _jobService = jobService;
 
         [HttpGet]
-        public async Task<IActionResult> GetAllJobs([FromQuery] int? pageSize, [FromQuery] int pageNumber = 1)
+        public async Task<IActionResult> GetAllJobs(
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] int? jobId = null,
+            [FromQuery] string? name = null,
+            [FromQuery] string? description = null,
+            [FromQuery] string? carModel = null,
+            [FromQuery] Status? jobStatus = null,
+            [FromQuery] string? supervisor = null,
+            [FromQuery] string? price = null)
         {
-            int size = pageSize ?? 10;
-            var data = await _jobService.GetAllJobs(pageNumber, size);
-            return Ok(data);
+            // Try parsing request value to Decimal object
+            Decimal? newPrice = null;
+            if (price is not null)
+            {
+                try
+                {
+                    newPrice = Decimal.Parse(price);
+                } catch (Exception e)
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, new { message = e.Message });
+                }
+            }
+
+            var jobs = await _jobService.GetAllJobs(
+            pageNumber,
+            pageSize,
+            jobId,
+            name,
+            description,
+            carModel,
+            jobStatus,
+            supervisor,
+            newPrice);
+
+            return Ok(jobs);
         }
 
         [HttpPost]
@@ -26,7 +54,7 @@ namespace WebsiteApi.Controllers
         {
             try
             {
-                // to Job model
+                // Try parsing request data to model
                 var job = createJobRequest.ToModel();
                 var result = await _jobService.AddJob(job);
                 return Ok(result);
@@ -55,11 +83,19 @@ namespace WebsiteApi.Controllers
                 Name = this.name,
                 Description = this.description,
                 CarModel = this.carModel,
-                JobStatus = Enum.Parse<Status>(this.jobStatus, true), // Parse the string to Status enum
+                JobStatus = Enum.Parse<Status>(this.jobStatus, true),
                 Supervisor = this.supervisor,
                 Price = Decimal.Parse(this.price),
                 CreatedAt = DateTime.UtcNow
             };
+        }
+    }
+    
+public record GetJobsResponse(List<Job> jobs, int length)
+    {
+        public static GetJobsResponse FromJobList(List<Job> jobs)
+        {
+            return new GetJobsResponse(jobs, jobs.Count);
         }
     }
 }
