@@ -45,7 +45,20 @@ body {
 
 /* Dashboard */
 .dashboard--title {
-  @apply text-[30px] font-light;
+  @apply text-4xl font-light;
+}
+
+.dashboard--element-container {
+  @apply p-5 rounded-md bg-gray-800 
+  transition ease-in hover:bg-gray-900 duration-150;
+}
+
+.dashboard--element-title {
+  @apply text-2xl  font-light;
+}
+
+.dashboard--element-subtitle {
+  @apply text-xl font-light;
 }
 
 .dashboard--action {
