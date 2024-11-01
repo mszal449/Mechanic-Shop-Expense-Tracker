@@ -9,7 +9,7 @@ namespace WebsiteApi.Services
     {
         private readonly DataContext _context = dataContext;
 
-        public async Task<List<Job>> GetAllJobs(
+        public async Task<List<Job>> GetAllRecords(
             int pageNumber = 1,
             int pageSize = 10,
             int? jobId = null,
@@ -44,6 +44,7 @@ namespace WebsiteApi.Services
             if (price.HasValue)
                 query = query.Where(j => j.Price == price.Value);
 
+            // Pagination
             if (pageNumber > 0 && pageSize > 0)
             {
                 query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
@@ -52,11 +53,49 @@ namespace WebsiteApi.Services
             return await query.ToListAsync();
         }
 
-        public async Task<Job> AddJob(Job job)
+        public async Task<Job?> GetById(int id)
+        {
+            return await _context.Jobs.FindAsync(id);
+        }
+
+        public async Task<Job> Add(Job job)
         {
             var result = await _context.Jobs.AddAsync(job);
             await _context.SaveChangesAsync();
             return result.Entity;
+        }
+
+        public async Task<Job> UpdateJob(int id, Job job)
+        {
+            var existingJob = await _context.Jobs.FindAsync(id);
+            if (existingJob == null)
+            {
+                return null;
+            }
+
+            existingJob.Name = job.Name;
+            existingJob.Description = job.Description;
+            existingJob.CarModel = job.CarModel;
+            existingJob.JobStatus = job.JobStatus;
+            existingJob.Supervisor = job.Supervisor;
+            existingJob.Price = job.Price;
+            existingJob.UpdatedAt = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+            return existingJob;
+        }
+
+        public async Task<bool> DeleteJob(int id)
+        {
+            var job = await _context.Jobs.FindAsync(id);
+            if (job == null)
+            {
+                return false;
+            }
+
+            _context.Jobs.Remove(job);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
     }
