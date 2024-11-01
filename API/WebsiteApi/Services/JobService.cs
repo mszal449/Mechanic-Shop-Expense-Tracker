@@ -98,5 +98,18 @@ namespace WebsiteApi.Services
             return true;
         }
 
+        public async Task<bool> BulkDeleteJobs(List<int> jobIds)
+        {
+            var jobs = await _context.Jobs.Where(j => jobIds.Contains(j.JobId)).ToListAsync();
+
+            if (jobs.Count == 0)
+            {
+                return false;
+            }
+
+            _context.Jobs.RemoveRange(jobs);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }
