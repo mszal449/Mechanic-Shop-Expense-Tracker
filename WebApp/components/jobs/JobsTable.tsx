@@ -11,15 +11,21 @@ const JobsTable = () => {
   const [error, setError] = useState<string | null>(null);
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
+  const [totalCount, setTotalCount] = useState(0);
   const [selectedJobs, setSelectedJobs] = useState<Set<number>>(new Set());
+
+
+  // calculate total page count
+  const totalPages = Math.ceil(totalCount / pageSize);
 
   // Fetch job data
   useEffect(() => {
     const fetchJobs = async () => {
       try {
         setIsLoading(true);
-        const jobsData = await getAllJobs(pageNumber, pageSize);
-        setJobs(jobsData);
+        const jobsData = await getAllJobs({pageNumber: pageNumber, pageSize: pageSize});
+        setJobs(jobsData.jobs);
+        setTotalCount(jobsData.totalCount)
         if (error) setError(null);
 
       } catch (error: any) {
@@ -57,6 +63,15 @@ const JobsTable = () => {
     }
   };
 
+  // handle new page size
+  const handlePageChange = (newPage: number) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setPageNumber(newPage);
+    }
+  };
+
+
+
   // Log selected jobs
   const logSelectedJobs = () => {
     console.log(jobs?.filter((job) => selectedJobs.has(job.jobId) ? job.jobId : null));
@@ -87,7 +102,7 @@ const JobsTable = () => {
           {/* Loading spinner */}
           {isLoading && (
             <tr>
-              <td colSpan={5} className="border border-gray-500 px-4 py-2 text-center">
+              <td colSpan={6} className="border border-gray-500 px-4 py-2 text-center">
                 <div className="flex justify-center items-center space-x-2">
                   <span className="loader"></span>
                   <span>Loading...</span>
@@ -99,8 +114,8 @@ const JobsTable = () => {
           {/* Error notification */}
           {!isLoading && error && (
             <tr>
-              <td colSpan={5} className="border border-gray-500 px-4 py-2 text-center text-red-500">
-                {error.toString()}
+              <td colSpan={6} className="border border-gray-500 px-4 py-2 text-center text-red-500">
+                An error occured while loading data
               </td>
             </tr>
           )}
@@ -125,7 +140,7 @@ const JobsTable = () => {
                 job.jobStatus === 3 ? 'text-red-500' : ''}`}>
               {JOB_STATUS[String(job.jobStatus)].text}</td>
               <td className="border border-gray-500 px-4 py-2">{job.supervisor || '-'}</td>
-              <td className="border border-gray-500 px-4 py-2">{job.createdAt.toLocaleDateString()}</td>
+              <td className="border border-gray-500 px-4 py-2">{job.createdAt.toLocaleString()}</td>
             </tr>
           ))}
         </tbody>
@@ -135,24 +150,27 @@ const JobsTable = () => {
         <button className='px-3 py-2 m-2 bg-red-500 rounded-md' onClick={logSelectedJobs}>Log</button>
       }
       {/* Pagination buttons */}
+      {!isLoading && !error && 
       <div className="flex justify-center mt-4">
         <button
-          className="px-3 py-2 mx-1 bg-gray-700 rounded-md"
-          onClick={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
+          className="px-3 py-2 mx-1 bg-gray-700 rounded-md disabled:bg-gray-900"
+          onClick={() => handlePageChange(pageNumber - 1)}
           disabled={pageNumber === 1}
         >
           Previous
         </button>
         <span className="px-3 py-2 mx-1">{pageNumber}</span>
         <button
-          className="px-3 py-2 mx-1 bg-gray-700 rounded-md"
-          onClick={() => setPageNumber((prev) => prev + 1)}
-          disabled={jobs && jobs.length < pageSize}
+          className="px-3 py-2 mx-1 bg-gray-700 rounded-md disabled:bg-gray-900"
+          onClick={() => handlePageChange(pageNumber + 1)}
+          disabled={pageNumber >= totalPages}
         >
           Next
         </button>
       </div>
+      }
     </div>
+    
   );
 };
 

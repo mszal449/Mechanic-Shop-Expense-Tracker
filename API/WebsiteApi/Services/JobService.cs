@@ -9,7 +9,7 @@ namespace WebsiteApi.Services
     {
         private readonly DataContext _context = dataContext;
 
-        public async Task<List<Job>> GetAllRecords(
+        public async Task<JobResult> GetAllRecords(
             int pageNumber = 1,
             int pageSize = 10,
             int? jobId = null,
@@ -44,13 +44,20 @@ namespace WebsiteApi.Services
             if (price.HasValue)
                 query = query.Where(j => j.Price == price.Value);
 
+            var totalCount = await query.CountAsync();
+
             // Pagination
             if (pageNumber > 0 && pageSize > 0)
             {
                 query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
             }
 
-            return await query.ToListAsync();
+            var jobs = await query.ToListAsync();
+            return new JobResult
+            {
+                Jobs = jobs,
+                TotalCount = totalCount
+            };
         }
 
         public async Task<Job?> GetById(int id)
@@ -110,6 +117,13 @@ namespace WebsiteApi.Services
             _context.Jobs.RemoveRange(jobs);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+
+        public class JobResult
+        {
+            public List<Job> Jobs { get; set; }
+            public int TotalCount { get; set; }
         }
     }
 }
