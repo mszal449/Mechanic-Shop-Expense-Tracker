@@ -26,6 +26,11 @@ body {
   }
 }
 
+/* Navbar */
+.navbar--element {
+  @apply py-3 text-xl font-light text-slate-200 hover:text-slate-400 transition ease-in duration-150;
+}
+
 .login-button {
   @apply p-3 font-light rounded-md text-slate-200 bg-slate-800 hover:bg-slate-900 transition ease-in duration-150;
 }
@@ -45,7 +50,20 @@ body {
 
 /* Dashboard */
 .dashboard--title {
-  @apply text-[30px] font-light;
+  @apply text-4xl font-light;
+}
+
+.dashboard--element-container {
+  @apply p-5 rounded-md bg-gray-800 
+  transition ease-in hover:bg-gray-900 duration-150;
+}
+
+.dashboard--element-title {
+  @apply text-2xl  font-light;
+}
+
+.dashboard--element-subtitle {
+  @apply text-xl font-light;
 }
 
 .dashboard--action {
