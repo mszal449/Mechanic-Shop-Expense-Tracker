@@ -28,12 +28,17 @@ body {
 
 /* Navbar */
 .navbar--element {
-  @apply py-3 text-xl font-light text-slate-200 hover:text-slate-400 transition ease-in duration-150;
+  @apply py-3 text-xl font-light 
+  text-slate-200 hover:text-slate-400 
+  transition ease-in duration-150;
 }
 
 .login-button {
-  @apply p-3 font-light rounded-md text-slate-200 bg-slate-800 hover:bg-slate-900 transition ease-in duration-150;
+  @apply p-3 font-light rounded-md 
+  text-slate-200 bg-slate-800 hover:bg-slate-900 
+  transition ease-in duration-150;
 }
+
 
 /* Home page */
 .home--banner-title {
@@ -41,12 +46,15 @@ body {
 }
 
 .home--banner-subtitle {
-  @apply text-[25px] font-light w-[80%];
+ @apply text-[25px] font-light w-[80%];
 }
 
 .home--begin-button {
-  @apply px-5 py-3 rounded-md bg-green-700 hover:bg-green-800 transition ease-in duration-150;
+  @apply px-5 py-3 rounded-md 
+  bg-green-700 hover:bg-green-800 
+  transition ease-in duration-150;
 }
+
 
 /* Dashboard */
 .dashboard--title {
@@ -70,9 +78,27 @@ body {
   @apply text-red-500;
 }
 
+
 /* Jobs */
 .jobs--title {
   @apply text-[30px] font-light;
+}
+
+/* Jobs Table */
+.table--head {
+  @apply border border-gray-700 px-4 py-2
+}
+
+.table--data {
+  @apply border border-gray-700 px-4 py-2;
+}
+
+/* Jobs Pagination */
+
+.pagination--button {
+  @apply px-3 py-2 mx-1
+    bg-gray-900 rounded-md hover:bg-gray-800 disabled:bg-neutral-900 
+    transition ease-in duration-150;
 }
 
 /* Filters */
@@ -80,8 +106,12 @@ body {
   @apply text-xl font-light text-gray-300;
 }
 
+
 .filters--text-input {
-  @apply p-3 rounded-md bg-gray-800 text-gray-300 outline-none;
+  @apply p-2 rounded-sm border
+   border-slate-900 
+   bg-gray-900 text-gray-300 
+   outline-none;
 }
 
 
