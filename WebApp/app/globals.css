@@ -96,20 +96,25 @@ body {
 /* Jobs Pagination */
 
 .pagination--button {
-  @apply px-3 py-2 mx-1
-    bg-gray-900 rounded-md hover:bg-gray-800 disabled:bg-neutral-900 
+  @apply px-2 my-1 text-sm rounded-sm
+    bg-gray-900 hover:bg-gray-800 disabled:bg-neutral-900 
     transition ease-in duration-150;
 }
 
 /* Filters */
 .filters--label {
-  @apply text-xl font-light text-gray-300;
+  @apply font-light text-gray-300;
+}
+
+.filters--button {
+  @apply text-sm font-extralight px-2 py-1 mt-4 rounded-sm
+  bg-blue-500 text-white;
 }
 
 
 .filters--text-input {
   @apply p-2 rounded-sm border
-   border-slate-900 
+   border-slate-700 
    bg-gray-900 text-gray-300 
    outline-none;
 }

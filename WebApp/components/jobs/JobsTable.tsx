@@ -24,13 +24,18 @@ const JobsTable = ({ filters } : JobsTableProps) => {
   // Fetch job data
   useEffect(() => {
     const fetchJobs = async () => {
+      setIsLoading(true);
+      
       try {
-        setIsLoading(true);
-        const jobsData = await getAllJobs({pageNumber: pageNumber, pageSize: pageSize});
-        setJobs(jobsData.jobs);
-        setTotalCount(jobsData.totalCount)
-        if (error) setError(null);
+        // fetch data and update states
+        const jobsData = await getAllJobs({
+          pageNumber: pageNumber, 
+          pageSize: pageSize, 
+          ...filters});
 
+        setJobs(jobsData.jobs);
+        setTotalCount(jobsData.totalCount);
+        if (error) setError(null);
       } catch (error: any) {
         setError(error)
       } finally {
@@ -56,12 +61,14 @@ const JobsTable = ({ filters } : JobsTableProps) => {
   };
 
   // Handle selecting all jobs with checkbox
-  const handleSelectAll = () => {
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (jobs) {
       if (selectedJobs.size === jobs.length) {
         setSelectedJobs(new Set());
+        e.target.checked = false;
       } else {
         setSelectedJobs(new Set(jobs.map((job) => job.jobId)));
+        e.target.checked = true;
       }
     }
   };
@@ -133,7 +140,8 @@ const JobsTable = ({ filters } : JobsTableProps) => {
 
           {/* Result table content */}
           {!isLoading && jobs && jobs.map((job) => (
-            <tr key={job.jobId}>
+            <tr key={job.jobId}
+            className={`${selectedJobs.has(job.jobId) ? "bg-slate-900" : ""}`}>
               <td className="table--data text-center">
                 <input
                     type="checkbox"
@@ -142,7 +150,7 @@ const JobsTable = ({ filters } : JobsTableProps) => {
                     onChange={() => handleCheckboxChange(job.jobId)}
                 />
               </td>
-              <td className="table--data text-center">{job.jobId}</td>
+              <td className="table--data text-center w-20">{job.jobId}</td>
               <td className="table--data">{job.name}</td>
               <td 
                 className={`table--data 

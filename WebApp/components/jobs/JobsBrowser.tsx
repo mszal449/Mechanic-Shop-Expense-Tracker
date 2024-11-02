@@ -9,11 +9,11 @@ const JobsBrowser = () => {
 
   return (
     <div className="grid grid-cols-12 gap-4">
-      <div className="col-span-3">
+      <div className="col-start-2 col-end-4">
         <JobsFilters filters={filters} setFilters={setFilters}/>
       </div>
-      <div className="col-span-9 ">
-        <JobsTable />
+      <div className="col-start-4 col-end-11">
+        <JobsTable filters={filters}/>
       </div>
     </div>
   );
