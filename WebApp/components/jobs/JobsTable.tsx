@@ -1,9 +1,11 @@
 'use client'
-import { JOB_STATUS } from '@/const';
+import { apiUrl, JOB_STATUS } from '@/const';
 import { getAllJobs } from '@/services/jobService';
 import { Job } from '@/types/apiTypes';
 import React, { useEffect, useState } from 'react';
 import Pagination from './Pagination';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface JobsTableProps {
   filters: any;
@@ -17,6 +19,7 @@ const JobsTable = ({ filters } : JobsTableProps) => {
   const [pageSize, setPageSize] = useState<number>(10);
   const [totalCount, setTotalCount] = useState(0);
   const [selectedJobs, setSelectedJobs] = useState<Set<number>>(new Set());
+  const router = useRouter();
 
   // calculate total page count
   const totalPages = Math.ceil(totalCount / pageSize);
@@ -47,7 +50,6 @@ const JobsTable = ({ filters } : JobsTableProps) => {
   }, [pageNumber, pageSize, filters]);
 
 
-  // Handle selecting a job with checkbox
   const handleCheckboxChange = (jobId: number) => {
     setSelectedJobs((prevSelectedJobs) => {
       const newSelectedJobs = new Set(prevSelectedJobs);
@@ -60,7 +62,6 @@ const JobsTable = ({ filters } : JobsTableProps) => {
     });
   };
 
-  // Handle selecting all jobs with checkbox
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (jobs) {
       if (selectedJobs.size === jobs.length) {
@@ -87,6 +88,11 @@ const JobsTable = ({ filters } : JobsTableProps) => {
       hour12: true,
     }).format(date);
   };
+
+  const handleRowClick = (jobId: number) => {
+    router.push(`/jobs/${jobId}`);
+  };
+
 
   return (
     <div className="px-10">
@@ -141,17 +147,27 @@ const JobsTable = ({ filters } : JobsTableProps) => {
           {/* Result table content */}
           {!isLoading && jobs && jobs.map((job) => (
             <tr key={job.jobId}
-            className={`${selectedJobs.has(job.jobId) ? "bg-slate-900" : ""}`}>
+            className={`
+              ${selectedJobs.has(job.jobId) ? "bg-slate-900" : ""}
+              hover:bg-slate-900 transition ease-in duration-50`}>
               <td className="table--data text-center">
                 <input
                     type="checkbox"
                     className='cursor-pointer'
                     checked={selectedJobs.has(job.jobId)}
-                    onChange={() => handleCheckboxChange(job.jobId)}
+                    onChange={(e) => { 
+                      e.stopPropagation();
+                      handleCheckboxChange(job.jobId)}
+                    }
                 />
               </td>
               <td className="table--data text-center w-20">{job.jobId}</td>
-              <td className="table--data">{job.name}</td>
+              <td 
+                className="table--data cursor-pointer"
+                onClick={() => handleRowClick(job.jobId)}
+              >
+                {job.name}
+              </td>
               <td 
                 className={`table--data 
                 ${job.jobStatus === 0 ? 'text-orange-500' : 
