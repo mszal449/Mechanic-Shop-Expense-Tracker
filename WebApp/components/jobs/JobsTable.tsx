@@ -24,7 +24,7 @@ const JobsTable = ({ filters } : JobsTableProps) => {
   // calculate total page count
   const totalPages = Math.ceil(totalCount / pageSize);
 
-  // Fetch job data
+  // fetch data
   useEffect(() => {
     const fetchJobs = async () => {
       setIsLoading(true);
