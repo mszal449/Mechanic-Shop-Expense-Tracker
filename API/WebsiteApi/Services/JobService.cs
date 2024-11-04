@@ -9,7 +9,7 @@ namespace WebsiteApi.Services
     {
         private readonly DataContext _context = dataContext;
 
-        public async Task<JobResult> GetAllJobsAsync(
+        public async Task<JobResult> GetJobsAsync(
             int pageNumber = 1,
             int pageSize = 10,
             int? jobId = null,
@@ -60,21 +60,21 @@ namespace WebsiteApi.Services
             };
         }
 
-        public async Task<Job?> GetByIdAsync(int id)
+        public async Task<Job?> GetJobByIdAsync(int id)
         {
             return await _context.Jobs
                 .Include(j => j.Expenses)
                 .FirstOrDefaultAsync(j => j.JobId == id);
         }
 
-        public async Task<Job> CreateAsync(Job job)
+        public async Task<Job> CreateJobAsync(Job job)
         {
             var result = await _context.Jobs.AddAsync(job);
             await _context.SaveChangesAsync();
             return result.Entity;
         }
 
-        public async Task<Job> UpdateJobAsync(int id, Job job)
+        public async Task<Job?> UpdateJobAsync(int id, Job job)
         {
             var existingJob = await _context.Jobs.FindAsync(id);
             if (existingJob == null)

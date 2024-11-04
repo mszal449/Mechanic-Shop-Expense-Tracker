@@ -51,7 +51,7 @@ namespace WebsiteApi.Tests
 
             // Act
             var newJobId = newJob.JobId;
-            var result = await _jobService.GetByIdAsync(newJobId);
+            var result = await _jobService.GetJobByIdAsync(newJobId);
 
             // Assert
             Assert.NotNull(result);
@@ -90,7 +90,7 @@ namespace WebsiteApi.Tests
             };
 
             // Create
-            var createdJob = await _jobService.CreateAsync(newJob);
+            var createdJob = await _jobService.CreateJobAsync(newJob);
 
             // Test result data
             Assert.NotNull(createdJob);
@@ -153,16 +153,16 @@ namespace WebsiteApi.Tests
             await _context.SaveChangesAsync();
 
             // Assert
-            var result1 = await _jobService.GetAllJobsAsync(carModel: "Mazda MX5");
+            var result1 = await _jobService.GetJobsAsync(carModel: "Mazda MX5");
             Assert.Equal(2, result1.Jobs.Count());
             Assert.Equal("Mazda MX5", result1.Jobs[0].CarModel);
             Assert.Equal(2, result1.TotalCount);
 
-            var result2 = await _jobService.GetAllJobsAsync(supervisor: "John Doe");
+            var result2 = await _jobService.GetJobsAsync(supervisor: "John Doe");
             Assert.Single(result2.Jobs);
             Assert.Equal("Test Job 2", result2.Jobs.First().Name);
             
-            var result3 = await _jobService.GetAllJobsAsync(description: "1");
+            var result3 = await _jobService.GetJobsAsync(description: "1");
             Assert.Single(result3.Jobs);
             Assert.Equal("Test Job 1", result3.Jobs.First().Name);
         }
@@ -233,7 +233,6 @@ namespace WebsiteApi.Tests
             Assert.NotNull(jobInDb.UpdatedAt);
             Assert.True(jobInDb.UpdatedAt > jobInDb.CreatedAt, "UpdatedAt should be later than CreatedAt");
         }
-
 
         [Fact]
         public async Task DeleteJobAsync_ShouldReturnTrue_WhenJobExists()

@@ -99,7 +99,7 @@ const JobsTable = ({ filters } : JobsTableProps) => {
       {/* Bulk operations buttons */}
       <div className="mb-2" style={{ visibility: selectedJobs.size > 0 ? 'visible' : 'hidden' }}>
         <button
-          className="px-1 p1-2 bg-red-400 hover:bg-red-500 transition ease-in duration-150 text-white rounded-md"
+          className="px-1 p1-2 bg-red-400 hover:bg-red-500 transition ease-in duration-150 text-white rounded-sm"
           onClick={handleBulkDelete}
         >
           Delete Selected
