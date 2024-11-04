@@ -19,6 +19,7 @@ const JobsTable = ({ filters } : JobsTableProps) => {
   const [pageSize, setPageSize] = useState<number>(10);
   const [totalCount, setTotalCount] = useState(0);
   const [selectedJobs, setSelectedJobs] = useState<Set<number>>(new Set());
+  const [isSelectedAllChecked, setIsSelectAllChecked] = useState<boolean>(false);
   const router = useRouter();
 
   // calculate total page count
@@ -29,6 +30,9 @@ const JobsTable = ({ filters } : JobsTableProps) => {
     const fetchJobs = async () => {
       setIsLoading(true);
       
+      // clear job selection after page refresh/page number change
+      setIsSelectAllChecked(false);
+      setSelectedJobs(new Set());
       try {
         // fetch data and update states
         const jobsData = await getAllJobs({
@@ -62,14 +66,14 @@ const JobsTable = ({ filters } : JobsTableProps) => {
     });
   };
 
-  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSelectAll = () => {
     if (jobs) {
       if (selectedJobs.size === jobs.length) {
         setSelectedJobs(new Set());
-        e.target.checked = false;
+        setIsSelectAllChecked(false);
       } else {
         setSelectedJobs(new Set(jobs.map((job) => job.jobId)));
-        e.target.checked = true;
+        setIsSelectAllChecked(true);
       }
     }
   };
@@ -112,6 +116,7 @@ const JobsTable = ({ filters } : JobsTableProps) => {
             <th className="table--head">
               <input type='checkbox' className='cursor-pointer'
                 onChange={handleSelectAll}
+                checked={isSelectedAllChecked}
               ></input>
             </th>
             <th className="table--head">#</th>
