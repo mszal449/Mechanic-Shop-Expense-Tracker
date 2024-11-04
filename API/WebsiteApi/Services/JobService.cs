@@ -74,7 +74,7 @@ namespace WebsiteApi.Services
             return result.Entity;
         }
 
-        public async Task<Job> UpdateJob(int id, Job job)
+        public async Task<Job> UpdateJobAsync(int id, Job job)
         {
             var existingJob = await _context.Jobs.FindAsync(id);
             if (existingJob == null)
@@ -94,7 +94,7 @@ namespace WebsiteApi.Services
             return existingJob;
         }
 
-        public async Task<bool> DeleteJob(int id)
+        public async Task<bool> DeleteJobAsync(int id)
         {
             var job = await _context.Jobs.FindAsync(id);
             if (job == null)
@@ -107,7 +107,7 @@ namespace WebsiteApi.Services
             return true;
         }
 
-        public async Task<bool> BulkDeleteJobs(List<int> jobIds)
+        public async Task<bool> BulkDeleteJobsAsync(List<int> jobIds)
         {
             var jobs = await _context.Jobs.Where(j => jobIds.Contains(j.JobId)).ToListAsync();
 

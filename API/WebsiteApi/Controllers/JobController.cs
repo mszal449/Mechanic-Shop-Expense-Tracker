@@ -70,7 +70,7 @@ namespace WebsiteApi.Controllers
                 return BadRequest();
             }
 
-            var updatedJob = await _jobService.UpdateJob(id, job);
+            var updatedJob = await _jobService.UpdateJobAsync(id, job);
 
             if (updatedJob == null)
             {
@@ -84,7 +84,7 @@ namespace WebsiteApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteJob(int id)
         {
-            var deleted = await _jobService.DeleteJob(id);
+            var deleted = await _jobService.DeleteJobAsync(id);
 
             if (!deleted)
             {
@@ -98,7 +98,7 @@ namespace WebsiteApi.Controllers
         [Route("bulk-delete")]
         public async Task<IActionResult> BulkDeleteJobs([FromBody] List<int> jobIds)
         {
-            var deleted = await _jobService.BulkDeleteJobs(jobIds);
+            var deleted = await _jobService.BulkDeleteJobsAsync(jobIds);
 
             if (!deleted)
             {
