@@ -18,6 +18,7 @@ namespace WebsiteApi.Models
 
         [Column(TypeName = "decimal(10,2)")]
         public Decimal Price { get; set; }
+        public int LaborHours { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime? UpdatedAt { get; set; }
         public ICollection<Expense> Expenses { get; set; }
@@ -26,6 +27,7 @@ namespace WebsiteApi.Models
         public Job()
         {
             this.JobStatus = Status.Pending;
+            this.LaborHours = 0;
         }
     }
 
