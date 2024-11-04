@@ -20,6 +20,8 @@ namespace WebsiteApi.Models
         public Decimal Price { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime? UpdatedAt { get; set; }
+        public ICollection<Expense> Expenses { get; set; }
+
 
         public Job()
         {

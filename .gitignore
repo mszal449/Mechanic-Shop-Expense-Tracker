@@ -10,3 +10,10 @@ API/WebsiteApi/packages/
 API/WebsiteApi/riderModule.iml
 API/WebsiteApi/_ReSharper.Caches/
 
+
+API/WebsiteApi.Tests/bin/
+API/WebsiteApi.Tests/obj/
+API/WebsiteApi.Tests/packages/
+API/WebsiteApi.Tests/riderModule.iml
+API/WebsiteApi.Tests/_ReSharper.Caches/
+API/.editorconfig

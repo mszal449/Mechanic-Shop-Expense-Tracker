@@ -25,7 +25,7 @@ namespace WebsiteApi.Controllers
         {
 
 
-            var jobs = await _jobService.GetAllRecords(
+            var jobs = await _jobService.GetAllJobsAsync(
             pageNumber,
             pageSize,
             jobId,
@@ -43,7 +43,7 @@ namespace WebsiteApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Job>> GetJob(int id)
         {
-            var job = await _jobService.GetById(id);
+            var job = await _jobService.GetByIdAsync(id);
 
             if (job == null)
             {
@@ -57,7 +57,7 @@ namespace WebsiteApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Job>> CreateJob(Job job)
         {
-            var createdJob = await _jobService.Add(job);
+            var createdJob = await _jobService.CreateAsync(job);
             return CreatedAtAction(nameof(GetJob), new { id = createdJob.JobId }, createdJob);
         }
 
