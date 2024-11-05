@@ -1,27 +1,48 @@
 'use client'
-import { JOB_STATUS } from '@/const';
+import { apiUrl, JOB_STATUS } from '@/const';
 import { getAllJobs } from '@/services/jobService';
 import { Job } from '@/types/apiTypes';
 import React, { useEffect, useState } from 'react';
+import Pagination from './Pagination';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
+interface JobsTableProps {
+  filters: any;
+}
 
-const JobsTable = () => {
+const JobsTable = ({ filters } : JobsTableProps) => {
   const [jobs, setJobs] = useState<Job[] | null>(null);
   const [isLoading, setIsLoading ] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
+  const [totalCount, setTotalCount] = useState(0);
   const [selectedJobs, setSelectedJobs] = useState<Set<number>>(new Set());
+  const [isSelectedAllChecked, setIsSelectAllChecked] = useState<boolean>(false);
+  const router = useRouter();
 
-  // Fetch job data
+  // calculate total page count
+  const totalPages = Math.ceil(totalCount / pageSize);
+
+  // fetch data
   useEffect(() => {
     const fetchJobs = async () => {
+      setIsLoading(true);
+      
+      // clear job selection after page refresh/page number change
+      setIsSelectAllChecked(false);
+      setSelectedJobs(new Set());
       try {
-        setIsLoading(true);
-        const jobsData = await getAllJobs(pageNumber, pageSize);
-        setJobs(jobsData);
-        if (error) setError(null);
+        // fetch data and update states
+        const jobsData = await getAllJobs({
+          pageNumber: pageNumber, 
+          pageSize: pageSize, 
+          ...filters});
 
+        setJobs(jobsData.jobs);
+        setTotalCount(jobsData.totalCount);
+        if (error) setError(null);
       } catch (error: any) {
         setError(error)
       } finally {
@@ -30,10 +51,9 @@ const JobsTable = () => {
     };
 
     fetchJobs();
-  }, [pageNumber, pageSize]);
+  }, [pageNumber, pageSize, filters]);
 
 
-  // Handle selecting a job with checkbox
   const handleCheckboxChange = (jobId: number) => {
     setSelectedJobs((prevSelectedJobs) => {
       const newSelectedJobs = new Set(prevSelectedJobs);
@@ -46,40 +66,64 @@ const JobsTable = () => {
     });
   };
 
-  // Handle selecting all jobs with checkbox
   const handleSelectAll = () => {
     if (jobs) {
       if (selectedJobs.size === jobs.length) {
         setSelectedJobs(new Set());
+        setIsSelectAllChecked(false);
       } else {
         setSelectedJobs(new Set(jobs.map((job) => job.jobId)));
+        setIsSelectAllChecked(true);
       }
     }
   };
 
-  // Log selected jobs
-  const logSelectedJobs = () => {
-    console.log(jobs?.filter((job) => selectedJobs.has(job.jobId) ? job.jobId : null));
+  const handleBulkDelete = async () => {
+    console.log('Bulk delete:', Array.from(selectedJobs));
   };
   
+  const formatDate = (date: Date) => {
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
+    }).format(date);
+  };
+
+  const handleRowClick = (jobId: number) => {
+    router.push(`/jobs/${jobId}`);
+  };
+
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full border-collapse border border-gray-500">
-
+    <div className="px-10">
+      {/* Bulk operations buttons */}
+      <div className="mb-2" style={{ visibility: selectedJobs.size > 0 ? 'visible' : 'hidden' }}>
+        <button
+          className="px-1 p1-2 bg-red-400 hover:bg-red-500 transition ease-in duration-150 text-white rounded-sm"
+          onClick={handleBulkDelete}
+        >
+          Delete Selected
+        </button>
+      </div>
+      <table className="min-w-full border-collapse border border-gray-500 pb-10">
         {/* Table Head */}
         <thead>
           <tr>
-            <th className="border border-gray-500 px-4 py-2">
-              <input type='checkbox'
+            <th className="table--head">
+              <input type='checkbox' className='cursor-pointer'
                 onChange={handleSelectAll}
+                checked={isSelectedAllChecked}
               ></input>
             </th>
-            <th className="border border-gray-500 px-4 py-2">#</th>
-            <th className="border border-gray-500 px-4 py-2">Name</th>
-            <th className="border border-gray-500 px-4 py-2">Status</th>
-            <th className="border border-gray-500 px-4 py-2">Mechanic</th>
-            <th className="border border-gray-500 px-4 py-2">Created At</th>
+            <th className="table--head">#</th>
+            <th className="table--head">Name</th>
+            <th className="table--head">Status</th>
+            <th className="table--head">Supervisor</th>
+            <th className="table--head">Created At</th>
           </tr>
         </thead>
         <tbody>
@@ -87,7 +131,7 @@ const JobsTable = () => {
           {/* Loading spinner */}
           {isLoading && (
             <tr>
-              <td colSpan={5} className="border border-gray-500 px-4 py-2 text-center">
+              <td colSpan={6} className="border border-gray-700 px-4 py-2 text-center">
                 <div className="flex justify-center items-center space-x-2">
                   <span className="loader"></span>
                   <span>Loading...</span>
@@ -99,60 +143,59 @@ const JobsTable = () => {
           {/* Error notification */}
           {!isLoading && error && (
             <tr>
-              <td colSpan={5} className="border border-gray-500 px-4 py-2 text-center text-red-500">
-                {error.toString()}
+              <td colSpan={6} className="border border-gray-700 px-4 py-2 text-center text-red-500">
+                An error occured while loading data
               </td>
             </tr>
           )}
 
           {/* Result table content */}
           {!isLoading && jobs && jobs.map((job) => (
-            <tr key={job.jobId}>
-              <td className="border border-gray-500 text-center">
+            <tr key={job.jobId}
+            className={`
+              ${selectedJobs.has(job.jobId) ? "bg-slate-900" : ""}
+              hover:bg-slate-900 transition ease-in duration-50`}>
+              <td className="table--data text-center">
                 <input
                     type="checkbox"
+                    className='cursor-pointer'
                     checked={selectedJobs.has(job.jobId)}
-                    onChange={() => handleCheckboxChange(job.jobId)}
+                    onChange={(e) => { 
+                      e.stopPropagation();
+                      handleCheckboxChange(job.jobId)}
+                    }
                 />
               </td>
-              <td className="border border-gray-500 px-4 py-2">{job.jobId}</td>
-              <td className="border border-gray-500 px-4 py-2">{job.name}</td>
+              <td className="table--data text-center w-20">{job.jobId}</td>
               <td 
-                className={`border border-gray-500 px-4 py-2 
+                className="table--data cursor-pointer"
+                onClick={() => handleRowClick(job.jobId)}
+              >
+                {job.name}
+              </td>
+              <td 
+                className={`table--data 
                 ${job.jobStatus === 0 ? 'text-orange-500' : 
                 job.jobStatus === 1 ? 'text-blue-500' : 
                 job. jobStatus === 2 ? 'text-green-500' : 
                 job.jobStatus === 3 ? 'text-red-500' : ''}`}>
               {JOB_STATUS[String(job.jobStatus)].text}</td>
-              <td className="border border-gray-500 px-4 py-2">{job.supervisor || '-'}</td>
-              <td className="border border-gray-500 px-4 py-2">{job.createdAt.toLocaleDateString()}</td>
+              <td className="table--data">{job.supervisor || '-'}</td>
+              <td className="table--data">{formatDate(new Date(job.createdAt))}</td>
             </tr>
           ))}
         </tbody>
       </table>
-      {/* operations on selected jobs */}
-      {selectedJobs.size > 0 && 
-        <button className='px-3 py-2 m-2 bg-red-500 rounded-md' onClick={logSelectedJobs}>Log</button>
-      }
       {/* Pagination buttons */}
-      <div className="flex justify-center mt-4">
-        <button
-          className="px-3 py-2 mx-1 bg-gray-700 rounded-md"
-          onClick={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
-          disabled={pageNumber === 1}
-        >
-          Previous
-        </button>
-        <span className="px-3 py-2 mx-1">{pageNumber}</span>
-        <button
-          className="px-3 py-2 mx-1 bg-gray-700 rounded-md"
-          onClick={() => setPageNumber((prev) => prev + 1)}
-          disabled={jobs && jobs.length < pageSize}
-        >
-          Next
-        </button>
-      </div>
+      {!isLoading && !error && 
+        <Pagination
+          pageNumber={pageNumber}
+          totalPages={totalPages}
+          setPageNumber={setPageNumber}
+        />
+      }
     </div>
+    
   );
 };
 

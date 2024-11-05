@@ -9,7 +9,7 @@ namespace WebsiteApi.Services
     {
         private readonly DataContext _context = dataContext;
 
-        public async Task<List<Job>> GetAllJobs(
+        public async Task<JobResult> GetJobsAsync(
             int pageNumber = 1,
             int pageSize = 10,
             int? jobId = null,
@@ -44,20 +44,88 @@ namespace WebsiteApi.Services
             if (price.HasValue)
                 query = query.Where(j => j.Price == price.Value);
 
+            var totalCount = await query.CountAsync();
+
+            // Pagination
             if (pageNumber > 0 && pageSize > 0)
             {
                 query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
             }
 
-            return await query.ToListAsync();
+            var jobs = await query.ToListAsync();
+            return new JobResult
+            {
+                Jobs = jobs,
+                TotalCount = totalCount
+            };
         }
 
-        public async Task<Job> AddJob(Job job)
+        public async Task<Job?> GetJobByIdAsync(int id)
+        {
+            return await _context.Jobs
+                .Include(j => j.Expenses)
+                .FirstOrDefaultAsync(j => j.JobId == id);
+        }
+
+        public async Task<Job> CreateJobAsync(Job job)
         {
             var result = await _context.Jobs.AddAsync(job);
             await _context.SaveChangesAsync();
             return result.Entity;
         }
 
+        public async Task<Job?> UpdateJobAsync(int id, Job job)
+        {
+            var existingJob = await _context.Jobs.FindAsync(id);
+            if (existingJob == null)
+            {
+                return null;
+            }
+
+            existingJob.Name = job.Name;
+            existingJob.Description = job.Description;
+            existingJob.CarModel = job.CarModel;
+            existingJob.JobStatus = job.JobStatus;
+            existingJob.Supervisor = job.Supervisor;
+            existingJob.Price = job.Price;
+            existingJob.UpdatedAt = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+            return existingJob;
+        }
+
+        public async Task<bool> DeleteJobAsync(int id)
+        {
+            var job = await _context.Jobs.FindAsync(id);
+            if (job == null)
+            {
+                return false;
+            }
+
+            _context.Jobs.Remove(job);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> BulkDeleteJobsAsync(List<int> jobIds)
+        {
+            var jobs = await _context.Jobs.Where(j => jobIds.Contains(j.JobId)).ToListAsync();
+
+            if (jobs.Count == 0)
+            {
+                return false;
+            }
+
+            _context.Jobs.RemoveRange(jobs);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+
+        public class JobResult
+        {
+            public List<Job> Jobs { get; set; }
+            public int TotalCount { get; set; }
+        }
     }
 }

@@ -1,5 +1,5 @@
 'use client'
-import React, { Dispatch, SetStateAction, useEffect } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 
 interface JobsFiltersProps {
   filters : IJobFilters | null,
@@ -8,23 +8,26 @@ interface JobsFiltersProps {
 
 
 const JobsFilters = ({filters, setFilters} : JobsFiltersProps) => {
+  const [localFilters, setLocalFilters] = useState<IJobFilters>({}); // Initialize local filters
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { id, value } = e.target;
-    setFilters((prevFilters) => ({
+    setLocalFilters((prevFilters) => ({
       ...prevFilters,
       [id]: value === '' ? undefined : value,
     }));
   };
 
-  useEffect(() => {
-    setFilters(filters);
-    console.log(filters);
-  }, [filters, setFilters]);
-  
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setFilters(localFilters);
+  };
+
   return (
-    <div className="flex flex-col gap-4 w-full p-4">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full p-4">
       {/* Job Name Filter */}
       <div className="flex flex-col">
         <label htmlFor="name" className="filters--label">
@@ -35,7 +38,7 @@ const JobsFilters = ({filters, setFilters} : JobsFiltersProps) => {
           id="name"
           className="filters--text-input"
           placeholder="Enter job name"
-          value={filters?.name || ''}
+          value={localFilters?.name || ''}
           onChange={handleInputChange}
         />
       </div>
@@ -48,7 +51,7 @@ const JobsFilters = ({filters, setFilters} : JobsFiltersProps) => {
         <select
           id="jobStatus"
           className="filters--text-input"
-          value={filters?.jobStatus ?? ''}
+          value={localFilters?.jobStatus ?? ''}
           onChange={handleInputChange}
         >
           <option value="">All Statuses</option>
@@ -69,7 +72,7 @@ const JobsFilters = ({filters, setFilters} : JobsFiltersProps) => {
           id="supervisor"
           className="filters--text-input"
           placeholder="Enter supervisor name"
-          value={filters?.supervisor || ''}
+          value={localFilters?.supervisor || ''}
           onChange={handleInputChange}
         />
       </div>
@@ -84,7 +87,7 @@ const JobsFilters = ({filters, setFilters} : JobsFiltersProps) => {
           id="carModel"
           className="filters--text-input"
           placeholder="Enter vehicle model"
-          value={filters?.carModel || ''}
+          value={localFilters?.carModel || ''}
           onChange={handleInputChange}
         />
       </div>
@@ -102,7 +105,23 @@ const JobsFilters = ({filters, setFilters} : JobsFiltersProps) => {
           // onChange={handleInputChange}
         />
       </div>
-    </div>
+      <div className='flex justify-between'>
+        {/* Filter Button */}
+        <button
+          type="submit"
+          className="filters--button"
+          >
+          Filter
+        </button>
+        {/* Reset Filters Button */}
+        <button 
+          onClick={() => setLocalFilters({})}
+          className='filters--button'
+          >
+          Reset
+        </button>
+      </div>
+    </form>
   );
 };
 

@@ -10,32 +10,22 @@ namespace WebsiteApi.Controllers
     {
         private readonly JobService _jobService = jobService;
 
+        // GET: api/jobs
         [HttpGet]
         public async Task<IActionResult> GetAllJobs(
-            [FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 10,
-            [FromQuery] int? jobId = null,
-            [FromQuery] string? name = null,
-            [FromQuery] string? description = null,
-            [FromQuery] string? carModel = null,
-            [FromQuery] Status? jobStatus = null,
-            [FromQuery] string? supervisor = null,
-            [FromQuery] string? price = null)
+            int pageNumber = 1,
+            int pageSize = 10,
+            int? jobId = null,
+            string? name = null,
+            string? description = null,
+            string? carModel = null,
+            Status? jobStatus = null,
+            string? supervisor = null,
+            decimal? price = null)
         {
-            // Try parsing request value to Decimal object
-            Decimal? newPrice = null;
-            if (price is not null)
-            {
-                try
-                {
-                    newPrice = Decimal.Parse(price);
-                } catch (Exception e)
-                {
-                    return StatusCode(StatusCodes.Status400BadRequest, new { message = e.Message });
-                }
-            }
 
-            var jobs = await _jobService.GetAllJobs(
+
+            var jobs = await _jobService.GetJobsAsync(
             pageNumber,
             pageSize,
             jobId,
@@ -44,58 +34,80 @@ namespace WebsiteApi.Controllers
             carModel,
             jobStatus,
             supervisor,
-            newPrice);
+            price);
 
             return Ok(jobs);
         }
 
+        // GET: api/jobs/{id}
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Job>> GetJob(int id)
+        {
+            var job = await _jobService.GetJobByIdAsync(id);
+
+            if (job == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(job);
+        }
+
+        // POST: api/jobs
         [HttpPost]
-        public async Task<IActionResult> CreateNewJob([FromBody] CreateJobRequest createJobRequest)
+        public async Task<ActionResult<Job>> CreateJob(Job job)
         {
-            try
-            {
-                // Try parsing request data to model
-                var job = createJobRequest.ToModel();
-                var result = await _jobService.AddJob(job);
-                return Ok(result);
-            }
-            catch (Exception e)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = e.Message });
-            }
+            var createdJob = await _jobService.CreateJobAsync(job);
+            return CreatedAtAction(nameof(GetJob), new { id = createdJob.JobId }, createdJob);
         }
-    }
 
-
-    public record CreateJobRequest(
-        string name,
-        string? description,
-        string carModel,
-        string jobStatus,
-        string price,
-        string? supervisor
-    )
-    {
-        public Job ToModel()
+        // PUT: api/jobs/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateJob(int id, Job job)
         {
-            return new Job
+            if (id != job.JobId)
             {
-                Name = this.name,
-                Description = this.description,
-                CarModel = this.carModel,
-                JobStatus = Enum.Parse<Status>(this.jobStatus, true),
-                Supervisor = this.supervisor,
-                Price = Decimal.Parse(this.price),
-                CreatedAt = DateTime.UtcNow
-            };
+                return BadRequest();
+            }
+
+            var updatedJob = await _jobService.UpdateJobAsync(id, job);
+
+            if (updatedJob == null)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
         }
-    }
-    
-public record GetJobsResponse(List<Job> jobs, int length)
-    {
-        public static GetJobsResponse FromJobList(List<Job> jobs)
+
+        // DELETE: api/jobs/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteJob(int id)
         {
-            return new GetJobsResponse(jobs, jobs.Count);
+            var deleted = await _jobService.DeleteJobAsync(id);
+
+            if (!deleted)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
         }
+
+        [HttpDelete]
+        [Route("bulk-delete")]
+        public async Task<IActionResult> BulkDeleteJobs([FromBody] List<int> jobIds)
+        {
+            var deleted = await _jobService.BulkDeleteJobsAsync(jobIds);
+
+            if (!deleted)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
+        
     }
 }
