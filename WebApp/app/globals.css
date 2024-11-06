@@ -130,6 +130,13 @@ body {
   animation: spin 1s linear infinite;
 }
 
+/* Statistics */
+.statistics--jobsCountElement {
+  @apply text-2xl font-light;
+}
+
+
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }

@@ -1,14 +1,17 @@
 import React from 'react'
+import { ExpenseGraph, JobsSummary } from '@/components'
 
 const Statistics = () => {
   return (
-    <>
-      <div className='text-center text-4xl'>Statistics</div>
-      <div className='grid grid-cols-2 px-10 py-4'>
-        <div className='col-span-1 border'>hello</div>
-        <div className='col-span-1 border'>world</div>
-      </div>
-    </>
+    <div className='px-10 mx-40'>
+      <div className='text-center text-4xl pb-10'>See statistics of your business</div>
+
+      {/* Count all jobs and their statuses */}
+      <JobsSummary/>
+
+      {/* View graph of jobs completed and jobs pending */}
+      <ExpenseGraph/>
+    </div>
   )
 }
 
