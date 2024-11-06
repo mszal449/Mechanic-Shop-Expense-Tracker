@@ -1,7 +1,12 @@
 import React from 'react'
 
-const JobsSummary = () => {
-  
+const JobsSummary = async () => {
+  // var totalJobs, pendingJobs, completedJobs, inProgressJobs;
+  // const getTotalJobs = async () => {
+  //   await 
+  // }
+
+
   return (
     <div className="text-center p-4 gap-5 grid grid-cols-4 border border-gray-700 rounded-t-md border-b-0">
       <div className='statistics--jobsCountElement'>Total Jobs: {testData.totalJobs}</div>

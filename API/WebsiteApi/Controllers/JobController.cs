@@ -108,6 +108,13 @@ namespace WebsiteApi.Controllers
             return NoContent();
         }
 
-        
+        // GET: api/jobs/statistics
+        [HttpGet]
+        [Route("statistics")]
+        public async Task<IActionResult> Statistics()
+        {
+            var result = await _jobService.GetStatisticsAsync();
+            return Ok(result);
+        }
     }
 }

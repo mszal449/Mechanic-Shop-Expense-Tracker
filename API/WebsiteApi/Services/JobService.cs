@@ -174,6 +174,51 @@ namespace WebsiteApi.Services
         }
 
         /// <summary>
+        /// Retrieves statistical data about jobs, including counts by status and chart data by date.
+        /// </summary>
+        /// <returns>A <see cref="StatisticsResult"/> containing job counts and chart data.</returns>
+        /// <summary>
+        /// Retrieves statistical data about jobs, including counts by status and chart data by date.
+        /// </summary>
+        /// <returns>A <see cref="StatisticsResult"/> containing job counts and chart data.</returns>
+        public async Task<StatisticsResult> GetStatisticsAsync()
+        {
+            // Liczba wszystkich zadań
+            var totalJobs = await _context.Jobs.CountAsync();
+
+            // Liczba zadań według statusów
+            var statusCounts = await _context.Jobs
+                .GroupBy(j => j.JobStatus)
+                .Select(g => new { Status = g.Key, Count = g.Count() })
+                .ToListAsync();
+
+            // Dane do wykresu: liczba zadań według daty utworzenia
+            var chartData = _context.Jobs
+                .AsEnumerable() 
+                .GroupBy(j => j.CreatedAt.Date)
+                .Select(g => new KeyValuePair<DateTime, int>(g.Key, g.Count()))
+                .OrderBy(kv => kv.Key)
+                .ToList();
+
+
+
+
+            // Przygotuj wynik
+            var result = new StatisticsResult
+            {
+                TotalJobs = totalJobs,
+                PendingJobs = statusCounts.FirstOrDefault(s => s.Status == Status.Pending)?.Count ?? 0,
+                CompletedJobs = statusCounts.FirstOrDefault(s => s.Status == Status.Completed)?.Count ?? 0,
+                InProgressJobs = statusCounts.FirstOrDefault(s => s.Status == Status.InProgress)?.Count ?? 0,
+                CancelledJobs = statusCounts.FirstOrDefault(s => s.Status == Status.Cancelled)?.Count ?? 0,
+                ChartData = chartData
+            };
+
+            return result;
+        }
+
+
+        /// <summary>
         /// Represents the result of a job query, including the list of jobs and the total count.
         /// </summary>
         public class JobResult
@@ -187,6 +232,42 @@ namespace WebsiteApi.Services
             /// Gets or sets the total count of jobs.
             /// </summary>
             public int TotalCount { get; set; }
+        }
+
+        /// <summary>
+        /// Represents the result of a statistics query, including job counts by status and chart data.
+        /// </summary>
+        public class StatisticsResult
+        {
+            /// <summary>
+            /// Gets or sets the total number of jobs.
+            /// </summary>
+            public int TotalJobs { get; set; }
+
+            /// <summary>
+            /// Gets or sets the number of pending jobs.
+            /// </summary>
+            public int PendingJobs { get; set; }
+
+            /// <summary>
+            /// Gets or sets the number of completed jobs.
+            /// </summary>
+            public int CompletedJobs { get; set; }
+
+            /// <summary>
+            /// Gets or sets the number of jobs in progress.
+            /// </summary>
+            public int InProgressJobs { get; set; }
+            
+            /// <summary>
+            /// Gets or sets the number of cancelled jobs.
+            /// </summary>
+            public int CancelledJobs { get; set; }
+
+            /// <summary>
+            /// Gets or sets the chart data representing the number of jobs per date.
+            /// </summary>
+            public List<KeyValuePair<DateTime, int>> ChartData { get; set; } = new List<KeyValuePair<DateTime, int>>();
         }
     }
 }
