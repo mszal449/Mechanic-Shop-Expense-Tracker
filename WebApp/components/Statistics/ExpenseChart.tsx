@@ -14,7 +14,6 @@ const ExpenseChart = ({chartData}: ChartDataProps) => {
   console.log(chartData)
   return (
     <div className='border border-gray-700 border-t-0 text-center rounded-b-md'>
-      {chartData.toString()}
     </div>
   )
 }

@@ -15,7 +15,7 @@ const JobsSummary = async ({
   inProgressJobs, 
   cancelledJobs}: JobsSummaryProps) => {
   return (
-    <div className="text-center p-4 gap-5 grid grid-cols-4 border border-gray-700 rounded-t-md border-b-0">
+    <div className="text-center p-4 gap-5 grid grid-cols-5 border border-gray-700 rounded-t-md border-b-0">
       <div className='statistics--jobsCountElement'>Total Jobs: {totalJobs}</div>
       <div className='statistics--jobsCountElement'>Pending Jobs: {pendingJobs}</div>
       <div className='statistics--jobsCountElement'>Completed Jobs: {completedJobs}</div>
