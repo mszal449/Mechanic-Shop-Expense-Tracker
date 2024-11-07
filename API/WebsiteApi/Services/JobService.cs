@@ -183,19 +183,16 @@ namespace WebsiteApi.Services
         /// <returns>A <see cref="StatisticsResult"/> containing job counts and chart data.</returns>
         public async Task<StatisticsResult> GetStatisticsAsync()
         {
-            // Liczba wszystkich zadań
             var totalJobs = await _context.Jobs.CountAsync();
-            // Liczba zadań według statusów
             var statusCounts = await _context.Jobs
                 .GroupBy(j => j.JobStatus)
                 .Select(g => new { Status = g.Key, Count = g.Count() })
                 .ToListAsync();
 
-            // Dane do wykresu: liczba zadań według daty utworzenia
             var chartData = _context.Jobs
                 .AsEnumerable() 
-                .GroupBy(j => j.CreatedAt.Date)
-                .Select(g => new KeyValuePair<DateTime, int>(g.Key, g.Count()))
+                .GroupBy(j =>  DateOnly.FromDateTime(j.CreatedAt.Date))
+                .Select(g => new KeyValuePair<DateOnly, int>(g.Key, g.Count()))
                 .OrderBy(kv => kv.Key)
                 .ToList();
 
@@ -263,7 +260,7 @@ namespace WebsiteApi.Services
             /// <summary>
             /// Gets or sets the chart data representing the number of jobs per date.
             /// </summary>
-            public List<KeyValuePair<DateTime, int>> ChartData { get; set; } = new List<KeyValuePair<DateTime, int>>();
+            public List<KeyValuePair<DateOnly, int>> ChartData { get; set; } = new List<KeyValuePair<DateOnly, int>>();
         }
     }
 }
