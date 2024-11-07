@@ -1,9 +1,20 @@
 import React from 'react'
 
-const ExpenseChart = () => {
+interface ChartDataItem {
+  key: string; 
+  value: number;
+}
+
+interface ChartDataProps {
+  chartData: ChartDataItem[];
+}
+
+
+const ExpenseChart = ({chartData}: ChartDataProps) => {
+  console.log(chartData)
   return (
     <div className='border border-gray-700 border-t-0 text-center rounded-b-md'>
-      This is an expense chart
+      {chartData.toString()}
     </div>
   )
 }

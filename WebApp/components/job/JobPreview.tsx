@@ -1,6 +1,6 @@
 'use client';
 import { JOB_STATUS } from '@/const';
-import { getJob } from '@/services/jobService';
+import { getJobAsync } from '@/services/jobService';
 import React, { useEffect, useState } from 'react';
 
 
@@ -12,7 +12,7 @@ const JobPreview = ({ jobId }: { jobId: number }) => {
   useEffect(() => {
     const fetchJob = async () => {
       try {
-        const jobResult = await getJob(jobId);
+        const jobResult = await getJobAsync(jobId);
         setJob(jobResult);
         setError(null);
       } catch (error: any) {

@@ -1,6 +1,6 @@
 'use client'
 import { apiUrl, JOB_STATUS } from '@/const';
-import { getAllJobs } from '@/services/jobService';
+import { getAllJobsAsync } from '@/services/jobService';
 import { Job } from '@/types/apiTypes';
 import React, { useEffect, useState } from 'react';
 import Pagination from './Pagination';
@@ -35,7 +35,7 @@ const JobsTable = ({ filters } : JobsTableProps) => {
       setSelectedJobs(new Set());
       try {
         // fetch data and update states
-        const jobsData = await getAllJobs({
+        const jobsData = await getAllJobsAsync({
           pageNumber: pageNumber, 
           pageSize: pageSize, 
           ...filters});

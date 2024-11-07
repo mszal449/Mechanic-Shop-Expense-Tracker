@@ -7,15 +7,28 @@ interface JobResult {
   totalCount: number;
 }
 
-export const getJob = async (id : number) => {
-  const response = await axios.get<Job>(`${apiUrl}/job/${id}`)
+// Ignore SSL for development
+const api = axios.create({
+  baseURL: `${apiUrl}`,
+  httpsAgent: new (require('https').Agent)({ rejectUnauthorized: false })
+});
+
+
+export const getJobAsync = async (id : number) => {
+  const response = await api.get<Job>(`${apiUrl}/job/${id}`)
   return response.data;
 }
 
 
-export const getAllJobs = async (filters: any): Promise<JobResult> => {
-  const response = await axios.get<JobResult>(`${apiUrl}/job`, {
+export const getAllJobsAsync = async (filters: any): Promise<JobResult> => {
+  const response = await api.get<JobResult>(`${apiUrl}/job`, {
     params: filters,
   });
   return response.data;
 };
+
+
+export const GetJobsStatisticsAsync = async () => {
+  const response = await api.get(`${apiUrl}/job/statistics`);
+  return response.data;
+}

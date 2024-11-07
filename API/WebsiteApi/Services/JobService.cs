@@ -185,7 +185,6 @@ namespace WebsiteApi.Services
         {
             // Liczba wszystkich zadań
             var totalJobs = await _context.Jobs.CountAsync();
-
             // Liczba zadań według statusów
             var statusCounts = await _context.Jobs
                 .GroupBy(j => j.JobStatus)
@@ -199,9 +198,6 @@ namespace WebsiteApi.Services
                 .Select(g => new KeyValuePair<DateTime, int>(g.Key, g.Count()))
                 .OrderBy(kv => kv.Key)
                 .ToList();
-
-
-
 
             // Przygotuj wynik
             var result = new StatisticsResult
