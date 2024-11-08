@@ -2,13 +2,12 @@
 import React, { Dispatch, SetStateAction, useState } from 'react';
 
 interface JobsFiltersProps {
-  filters : IJobFilters | null,
   setFilters: Dispatch<SetStateAction<IJobFilters | null>>;
 }
 
 
-const JobsFilters = ({filters, setFilters} : JobsFiltersProps) => {
-  const [localFilters, setLocalFilters] = useState<IJobFilters>({}); // Initialize local filters
+const JobsFilters = ({setFilters} : JobsFiltersProps) => {
+  const [localFilters, setLocalFilters] = useState<IJobFilters>({});
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -19,7 +18,6 @@ const JobsFilters = ({filters, setFilters} : JobsFiltersProps) => {
       [id]: value === '' ? undefined : value,
     }));
   };
-
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -89,20 +87,6 @@ const JobsFilters = ({filters, setFilters} : JobsFiltersProps) => {
           placeholder="Enter vehicle model"
           value={localFilters?.carModel || ''}
           onChange={handleInputChange}
-        />
-      </div>
-
-      {/* Date Created Filter */}
-      <div className="flex flex-col">
-        <label htmlFor="createdAt" className="filters--label">
-          Date Created
-        </label>
-        <input
-          type="date"
-          id="createdAt"
-          className="filters--text-input"
-          // value={filters?.createdAt || ''}
-          // onChange={handleInputChange}
         />
       </div>
       <div className='flex justify-between'>

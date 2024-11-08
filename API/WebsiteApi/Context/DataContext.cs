@@ -7,7 +7,6 @@ namespace WebsiteApi.Context;
 public class DataContext : DbContext 
 {
     public DataContext(DbContextOptions<DataContext> options) : base(options) { }
-    public DbSet<User> Users { get; set; }
     public DbSet<Job> Jobs { get; set; }  
     public DbSet<Expense> Expenses { get; set; }
 
@@ -22,5 +21,4 @@ public class DataContext : DbContext
             .HasForeignKey(e => e.JobId)
             .OnDelete(DeleteBehavior.Cascade);
     }
-
 }

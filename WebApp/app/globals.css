@@ -86,7 +86,7 @@ body {
 
 /* Jobs Table */
 .table--head {
-  @apply border border-gray-700 px-4 py-2
+  @apply rounded-t-md border border-gray-700 px-4 py-2;
 }
 
 .table--data {
@@ -133,6 +133,16 @@ body {
 /* Statistics */
 .statistics--jobsCountElement {
   @apply text-2xl font-light;
+}
+
+/* New Job Modal */
+
+.new_job_modal__title {
+  @apply text-2xl font-semibold mb-4 text-gray-300;
+}
+
+.new_job_modal__input_label {
+  @apply block text-sm font-medium text-gray-300;
 }
 
 

@@ -1,10 +1,3 @@
-"use client";
-
-import { useRouter } from "next/navigation";
-import { useContext, useEffect, useState } from "react";
-import { authContext } from "@/components/auth/AuthProvider";
-import { useAuth } from "@/components";
-
 export default function Home() {
   return (
     <div className="pt-[200px] flex flex-col gap-4 items-center">

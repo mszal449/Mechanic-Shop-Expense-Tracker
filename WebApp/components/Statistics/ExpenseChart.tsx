@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import {Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 interface ChartDataItem {
    date: string; 
   value: number;

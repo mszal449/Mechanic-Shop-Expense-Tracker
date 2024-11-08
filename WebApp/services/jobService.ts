@@ -32,3 +32,14 @@ export const GetJobsStatisticsAsync = async () => {
   const response = await api.get(`${apiUrl}/job/statistics`);
   return response.data;
 }
+
+
+export const BulkDeleteJobsAsync = async (jobsToDelete: number[]) => {
+  const response = await axios.delete(`${apiUrl}/job/bulk-delete`, {
+    data: jobsToDelete,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  return response.data;
+}

@@ -1,10 +1,9 @@
 'use client'
-import { apiUrl, JOB_STATUS } from '@/const';
-import { getAllJobsAsync } from '@/services/jobService';
+import { JOB_STATUS } from '@/const';
+import { BulkDeleteJobsAsync, getAllJobsAsync } from '@/services/jobService';
 import { Job } from '@/types/apiTypes';
 import React, { useEffect, useState } from 'react';
 import Pagination from './Pagination';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 interface JobsTableProps {
@@ -25,35 +24,34 @@ const JobsTable = ({ filters } : JobsTableProps) => {
   // calculate total page count
   const totalPages = Math.ceil(totalCount / pageSize);
 
-  // fetch data
+  const fetchJobs = async () => {
+    setIsLoading(true);
+    
+    // clear job selection after page refresh/page number change
+    setIsSelectAllChecked(false);
+    setSelectedJobs(new Set());
+    try {
+      // fetch data and update states
+      const jobsData = await getAllJobsAsync({
+        pageNumber: pageNumber, 
+        pageSize: pageSize, 
+        ...filters});
+
+      setJobs(jobsData.jobs);
+      setTotalCount(jobsData.totalCount);
+      if (error) setError(null);
+    } catch (error: any) {
+      setError(error)
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchJobs = async () => {
-      setIsLoading(true);
-      
-      // clear job selection after page refresh/page number change
-      setIsSelectAllChecked(false);
-      setSelectedJobs(new Set());
-      try {
-        // fetch data and update states
-        const jobsData = await getAllJobsAsync({
-          pageNumber: pageNumber, 
-          pageSize: pageSize, 
-          ...filters});
-
-        setJobs(jobsData.jobs);
-        setTotalCount(jobsData.totalCount);
-        if (error) setError(null);
-      } catch (error: any) {
-        setError(error)
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchJobs();
   }, [pageNumber, pageSize, filters]);
 
-
+  // checkbox change for single record
   const handleCheckboxChange = (jobId: number) => {
     setSelectedJobs((prevSelectedJobs) => {
       const newSelectedJobs = new Set(prevSelectedJobs);
@@ -66,6 +64,7 @@ const JobsTable = ({ filters } : JobsTableProps) => {
     });
   };
 
+  // checkbox change for all records
   const handleSelectAll = () => {
     if (jobs) {
       if (selectedJobs.size === jobs.length) {
@@ -79,7 +78,10 @@ const JobsTable = ({ filters } : JobsTableProps) => {
   };
 
   const handleBulkDelete = async () => {
-    console.log('Bulk delete:', Array.from(selectedJobs));
+    const selectedJobsArray: number[] = Array.from(selectedJobs)
+    await BulkDeleteJobsAsync(selectedJobsArray);
+    setSelectedJobs(new Set<number>());
+    fetchJobs();
   };
   
   const formatDate = (date: Date) => {
@@ -89,7 +91,7 @@ const JobsTable = ({ filters } : JobsTableProps) => {
       day: 'numeric',
       hour: 'numeric',
       minute: 'numeric',
-      hour12: true,
+      hour12: false,
     }).format(date);
   };
 
@@ -97,19 +99,24 @@ const JobsTable = ({ filters } : JobsTableProps) => {
     router.push(`/jobs/${jobId}`);
   };
 
-
   return (
     <div className="px-10">
-      {/* Bulk operations buttons */}
-      <div className="mb-2" style={{ visibility: selectedJobs.size > 0 ? 'visible' : 'hidden' }}>
-        <button
-          className="px-1 p1-2 bg-red-400 hover:bg-red-500 transition ease-in duration-150 text-white rounded-sm"
-          onClick={handleBulkDelete}
-        >
-          Delete Selected
-        </button>
+      <div className='flex gap-2'>
+        {/* Bulk operations buttons */}
+        <div className="mb-2" 
+          style={
+            { visibility: !isLoading && !error ? 'visible' : 'hidden' }
+          }>
+          <button
+            className="p-2 text-white bg-red-400 enabled:hover:bg-red-500 transition ease-in duration-150  rounded-md disabled:opacity-50"
+            onClick={handleBulkDelete}
+            disabled={selectedJobs.size === 0}
+            >
+            Delete Selected
+          </button>
+        </div>
       </div>
-      <table className="min-w-full border-collapse border border-gray-500 pb-10">
+      <table className="min-w-full rounded-t-md border-collapse pb-10">
         {/* Table Head */}
         <thead>
           <tr>

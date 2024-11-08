@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
-import { AuthProvider, Navbar } from "@/components";
+import { Navbar } from "@/components";
 
 const metadata: Metadata = {
   title: "Car Mechanic Expense Tracker",
@@ -15,12 +14,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      {/* <AuthProvider>  */}
       <body>
         <Navbar />
         {children}
       </body>
-      {/* </AuthProvider> */}
     </html>
   );
 }

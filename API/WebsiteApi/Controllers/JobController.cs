@@ -96,7 +96,7 @@ namespace WebsiteApi.Controllers
 
         [HttpDelete]
         [Route("bulk-delete")]
-        public async Task<IActionResult> BulkDeleteJobs([FromBody] List<int> jobIds)
+        public async Task<IActionResult> BulkDeleteJobs(List<int> jobIds)
         {
             var deleted = await _jobService.BulkDeleteJobsAsync(jobIds);
 

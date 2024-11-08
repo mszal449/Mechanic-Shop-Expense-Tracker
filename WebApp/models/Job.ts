@@ -13,19 +13,19 @@ interface Job {
 
 // Enum for Job Status
 enum Status {
-    Pending = 0,
-    InProgress = 1,
-    Completed = 2,
-    Cancelled = 3,
+  Pending = 0,
+  InProgress = 1,
+  Completed = 2,
+  Cancelled = 3,
 }
 
 // JobFilters interface for filters state
 interface IJobFilters {
-    jobId?: number;
-    name?: string;
-    description?: string;
-    carModel?: string;
-    jobStatus?: Status;
-    supervisor?: string;
-    price?: number;
-  }
+  jobId?: number;
+  name?: string;
+  description?: string;
+  carModel?: string;
+  jobStatus?: Status;
+  supervisor?: string;
+  price?: number;
+}

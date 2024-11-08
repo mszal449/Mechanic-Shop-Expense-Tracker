@@ -23,7 +23,6 @@ namespace WebsiteApi.Models
         public DateTime? UpdatedAt { get; set; }
         public ICollection<Expense> Expenses { get; set; }
 
-
         public Job()
         {
             this.JobStatus = Status.Pending;
